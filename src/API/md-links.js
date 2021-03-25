@@ -1,27 +1,31 @@
-const options = require('./options.js');
 const methods = require('./methods.js');
 
-/* modulo para las funciones referentes a las rutas */
+/* modulo para función principal mdlinks */
 
-const mdLinks = (path, options = { validate: true }) => new Promise((resolve, reject) => {
-  // convertir a ruta absoluta
+const mdLinks = (path, options = { validate: false }) => new Promise((resolve, reject) => {
+  let msg = '';
   const validRoute = methods.validAndResolve(path);
-  const result = [];
-
-  if (methods.isFileAndExists(validRoute)) { // validar ruta y si existe
-    if (methods.isMarkdown(validRoute)) { // validar si es archivo MarkDown
-      result.push(validRoute);
-      console.log(JSON.stringify(result)); // test array de md's
+  if (validRoute) {
+    if (options.validate === false) {
+      resolve(methods.getLinks(validRoute));
+    } if (options.validate === true) {
+      resolve(methods.validateLinks(validRoute));
     }
-  } else if (methods.isDirectory(validRoute)) {
-    const arrayRoutes = methods.arrayDirectory(validRoute);
-    const routesMD = arrayRoutes.filter((route) => route.endsWith('.md'));
-    routesMD.forEach((mdlink) => mdLinks(mdlink, options.validate));
   }
+  if (validRoute === false) {
+    msg = 'Route Invalid';
+    reject(msg);
+  }
+  msg = 'Error';
+  reject(msg);
 });
 
-// mdLinks('./Readme.md', { validate: true });
-mdLinks('./', true);
+mdLinks('/.')
+  .then((links) => {
+    console.log(links);
+    // => [{ href, text, file }]
+  })
+  .catch(console.error);
 
 module.exports = {
   mdLinks,

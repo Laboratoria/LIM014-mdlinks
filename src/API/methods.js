@@ -2,54 +2,99 @@
 const fs = require('fs');
 // modulo para trabajar con rutas
 const path = require('path');
-
-// función que recibe una ruta y verifica si es absoluta, retorna un booleano
-const isAbsolute = (route) => path.isAbsolute(route);
-// función que resuelve una ruta relativa a absoluta
-// const resolveToAbsolute = (route) => path.resolve(route);
+// modulo para usar fetch en nodejs
+const fetch = require('node-fetch');
 // función sincrona que recibe una ruta y verifica si es un directorio, retorna un boolean.
 const isDirectory = (route) => fs.statSync(route).isDirectory();
-// función sincrona que recibe una ruta y verifica si es un archivo, retorna un boolean.
 
-const validAndResolve = ((route) => {
-  if (!isAbsolute(route)) {
-    const resolveToAbsolute = path.resolve(route);
-    return resolveToAbsolute;
+// función que lee el contenido de un archivo y lo transforma a string
+const readFile = (route) => fs.readFileSync(route, 'utf-8');
+
+const arrayRegex = {
+  regexMdLinks: new RegExp(/\[([\w\s\d]+)\]\(((?:\/|https?:\/\/)[\w\d./?=#-&_%~,.:]+)\)/mg),
+  regxLink: new RegExp(/\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg),
+  regxText: new RegExp(/\[([\w\s\d.()]+)\]/g),
+};
+
+const getLinksArray = ((route) => {
+  const contentMD = readFile(route);
+  const arrayContentURL = contentMD.match(arrayRegex.regexMdLinks);
+  const linksArray = [];
+  if (arrayContentURL) {
+    arrayContentURL.forEach((element) => {
+      const linkObject = {
+        path: route,
+        text: element.match(arrayRegex.regxText).join().slice(1, -1),
+        href: element.match(arrayRegex.regxLink).join().slice(1, -1),
+      //     text: text,
+      };
+      linksArray.push(linkObject);
+    });
+    return linksArray;
   }
-  return route;
+  return linksArray.filter((element) => element !== undefined);
 });
 
-const isFileAndExists = (route) => {
+const getStatusLinks = (arrayLinks) => {
+  const arr = arrayLinks.map((link) => fetch(link.href)
+    .then((url) => ({ status: url.status, message: url.statusText, ...link }))
+
+    .catch((url) => ({ status: url.status ? url.status : 'Not defined', message: 'FAIL', ...link })));
+  return Promise.all(arr);
+};
+
+const validAndResolve = (route) => {
+  const pathNormalize = path.normalize(route);
+  const isExist = fs.existsSync(pathNormalize) ? path.resolve(pathNormalize) : false;
+  return isExist;
+};
+
+const isFile = (route) => {
   if (fs.statSync(route).isFile()) {
     return fs.existsSync(route);
   }
   return false;
 };
 // función que verifica si es un archivo .md
-const isMarkdown = (route) => (path.extname(route) === '.md');
-// función que verifica si la ruta existe, retorna un boolean.
-// const isValidRoute = (route) => fs.existsSync(route);
-// función que recorre un directorio y almacena en un array
+const isMd = (route) => (path.extname(route) === '.md');
 
 // la ruta de los archivos dentro del directorio. Devuelve un array de rutas.
 const arrayDirectory = (route) => fs.readdirSync(route);
 
-// función que lee el contenido de un archivo y lo transforma a string
-const stringFileContent = (route) => fs.readFileSync(route);
-// función que resuelve rutas
-// const normalize = (route) => path.normalize(route);
+const getLinks = (route) => {
+  let arrayResult = [];
+  if (isFile(route) && isMd(route)) {
+    return getLinksArray(route);
+  }
+  if (isDirectory(route)) {
+    const arrayRoutes = arrayDirectory(route);
+    const routesMD = arrayRoutes.filter((file) => file.endsWith('.md'));
+    routesMD.forEach((mdlink) => {
+      if (mdlink) {
+        const result = getLinks(mdlink);
+        arrayResult = arrayResult.concat(result);
+      }
+    });
+  }
+  return arrayResult.filter((element) => element !== undefined);
+};
 
-// exportar funciones para poder llamarlas desde otro archivo
+const validateLinks = (url) => {
+  const arrayLinks = getLinks(url);
+  const result = getStatusLinks(arrayLinks);
+
+  return result;
+};
+
 module.exports = {
-  // isAbsolute,
-  // resolveToAbsolute,
-  isMarkdown,
+  isMd,
   isDirectory,
-  // isFile,
-  // isValidRoute,
+  getLinksArray,
   arrayDirectory,
-  stringFileContent,
-  // normalize,
+  readFile,
   validAndResolve,
-  isFileAndExists,
+  isFile,
+  getStatusLinks,
+  validateLinks,
+  getLinks,
 };
