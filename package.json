@@ -7,10 +7,10 @@
     "test": "test"
   },
   "scripts": {
-    "start": "node src/API/md-links.js",
+    "start": "node src/API/result.js",
     "eslint": "eslint --ext .js  test/",
     "pretest": "npm run eslint",
-    "test": "jest --verbose --coverag"
+    "test": "jest --verbose --coverage"
   },
   "repository": {
     "type": "git",

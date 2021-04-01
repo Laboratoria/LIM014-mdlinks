@@ -20,13 +20,6 @@ const mdLinks = (path, options = { validate: false }) => new Promise((resolve, r
   reject(msg);
 });
 
-mdLinks('/.')
-  .then((links) => {
-    console.log(links);
-    // => [{ href, text, file }]
-  })
-  .catch(console.error);
-
 module.exports = {
   mdLinks,
 };

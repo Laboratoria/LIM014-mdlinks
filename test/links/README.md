@@ -36,3 +36,7 @@ propia librería (o biblioteca - library) en JavaScript.
 * Issues del proyecto
 
   *  Diagrama de flujo
+
+## 4. Recursos de aprendizaje
+
+![Asincronía](https://www.youtube.com/playlist?list=PLImOJ2OqvvkCuDi6E33HXMP23BvYYBHcm)
