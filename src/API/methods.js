@@ -32,9 +32,9 @@ const getLinksArray = ((route) => {
 const getStatusLinks = (arrayLinks) => {
   const arr = arrayLinks.map((link) => fetch(link.href)
     .then((url) => (
-      { status: url.status, message: url.statusText, ...link }))
+      { status: url.status, message: url.statusText === 'OK' ? url.statusText : 'Fail', ...link }))
     .catch((url) => (
-      { status: url.status ? url.status : 'Not defined', message: 'FAIL', ...link })));
+      { status: url.status ? url.status : 'Not defined', message: 'Fail', ...link })));
   return Promise.all(arr);
 };
 
@@ -92,7 +92,10 @@ const validateLinks = (url) => {
   return result;
 };
 
+const pathRelative = (from, to) => path.relative(from, to);
+
 module.exports = {
+  pathRelative,
   isMd,
   isDirectory,
   getLinksArray,
