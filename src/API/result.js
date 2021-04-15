@@ -13,7 +13,7 @@ mdLinks('./test', { validate: true })
   })
   .catch(console.error);
 
-mdLinks('./test')
+mdLinks('asdasd')
   .then((links) => {
     console.log(links);
   })

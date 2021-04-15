@@ -6,7 +6,7 @@ const path = require('path');
 const fetch = require('node-fetch');
 
 const arrayRegex = {
-  regexMdLinks: new RegExp(/\[([\w\s\d]+)\]\(((?:\/|https?:\/\/)[\w\d./?=#-&_%~,.:]+)\)/mg),
+  regexMdLinks: new RegExp(/\[([\w\s\d/.]+)\]\(((?:\/|https?:\/\/)[\w\d./?=#-&_%~,.:]+)\)/mg),
   regxLink: new RegExp(/\(((?:\/|https?:\/\/)[\w\d./?=#&_%~,.:-]+)\)/mg),
   regxText: new RegExp(/\[([\w\s\d.()]+)\]/g),
 };
@@ -32,7 +32,7 @@ const getLinksArray = ((route) => {
 const getStatusLinks = (arrayLinks) => {
   const arr = arrayLinks.map((link) => fetch(link.href)
     .then((url) => (
-      { status: url.status, message: url.statusText === 'OK' ? url.statusText : 'Fail', ...link }))
+      { status: url.status, statusText: url.statusText === 'OK' ? url.statusText : 'Fail', ...link }))
     .catch((url) => (
       { status: url.status ? url.status : 'Not defined', message: 'Fail', ...link })));
   return Promise.all(arr);

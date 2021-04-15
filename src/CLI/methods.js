@@ -1,4 +1,4 @@
-const {pathRelative} = require('../API/methods.js');
+const { pathRelative } = require('../API/methods.js');
 
 const statsTotal = (arr) => arr.length;
 
@@ -8,7 +8,7 @@ const statsUnique = (arr) => {
 };
 
 const statsBroken = (arr) => {
-  const broken = [...new Set(arr.filter((a) => a.message === 'Fail'))];
+  const broken = [...new Set(arr.filter((a) => a.statusText === 'Fail'))];
   return broken.length;
 };
 
@@ -31,7 +31,7 @@ const showResult = (arr) => {
       href: obj.href,
     };
     if (obj.status) {
-      linksArray.message = obj.message;
+      linksArray.statusText = obj.statusText;
       linksArray.status = obj.status;
     }
     result.push(linksArray);

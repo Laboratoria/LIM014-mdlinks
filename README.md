@@ -39,4 +39,6 @@ propia librería (o biblioteca - library) en JavaScript.
 
 ## 4. Recursos de aprendizaje
 
-![Asincronía](https://www.youtube.com/playlist?list=PLImOJ2OqvvkCuDi6E33HXMP23BvYYBHcm)
+[Asincronía](https://www.youtube.com/playlist?list=PLImOJ2OqvvkCuDi6E33HXMP23BvYYBHcm)
+[Test Asincronía](https://www.pluralsight.com/guides/test-asynchronous-code-jest)
+ 

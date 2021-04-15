@@ -3,10 +3,8 @@ const methods = require('../src/API/methods.js');
 const realpathMd = 'test\\links\\test link.md';
 const fakePath = 'test\\test link.md';
 const realPathDirectory = 'test\\links';
-/* const pathMdFail = 'C:\\Users\\MILUSKA\\Documents\\GitH
-ub\\LIM014-mdlinks\\test\\links\\test link.md';
- */
 const pathMd = 'test\\links\\readme.md';
+
 const arrayLinks = [{
   path: 'test\\links\\readme.md',
   text: 'motor de JavaScript V8 de Chrome',
@@ -15,36 +13,36 @@ const arrayLinks = [{
 
 const arrayLinksDirectory = [{
   href: 'https://developers.google.com/v8/',
-  path: 'C:\\Users\\MILUSKA\\Documents\\GitHub\\LIM014-mdlinks\\test\\links\\README.md',
+  path: `${__dirname}\\links\\README.md`,
   text: 'motor de JavaScript V8 de Chrome',
 },
 {
-  path: 'C:\\Users\\MILUSKA\\Documents\\GitHub\\LIM014-mdlinks\\test\\links\\test link.md',
+  path: `${__dirname}\\links\\test link.md`,
   text: 'status code 500',
   href: 'https://httpstat.us/500',
 },
 {
-  path: 'C:\\Users\\MILUSKA\\Documents\\GitHub\\LIM014-mdlinks\\test\\links\\test link.md',
+  path: `${__dirname}\\links\\test link.md`,
   text: 'status Fail',
   href: 'https://gdfdfvddfbdfg.comsf',
 },
 {
-  path: 'C:\\Users\\MILUSKA\\Documents\\GitHub\\LIM014-mdlinks\\test\\links\\test link.md',
-  text: 'status code404',
+  path: `${__dirname}\\links\\test link.md`,
+  text: 'status code 404',
   href: 'https://httpstat.us/404',
 },
 ];
 
 const arrayLinksStatus = [{
   href: 'https://developers.google.com/v8/',
-  message: 'OK',
+  statusText: 'OK',
   path: 'test\\links\\readme.md',
   status: 200,
   text: 'motor de JavaScript V8 de Chrome',
 }];
 
 const arrayLinkFail = [{
-  path: 'C:\\Users\\MILUSKA\\Documents\\GitHub\\LIM014-mdlinks\\test\\links\\test link.md',
+  path: `${__dirname}\\links\\test link.md`,
   text: 'status code 500',
   href: 'https://httpstat.us/500',
 }];
@@ -58,28 +56,25 @@ describe('Métodos para trabajar con rutas', () => {
     expect(methods.validAndResolve(realpathMd)).toBe(result);
   });
   it('validAndResolve(), debería retornar false si es una ruta no existente', () => {
-    expect(methods.validAndResolve(fakePath)).toBe(false);
+    expect(methods.validAndResolve(fakePath)).toBeFalsy();
   });
   it('isFile(), Debería retornar true si es un el path de un archivo existente', () => {
-    expect(methods.isFile(realpathMd)).toBe(true);
+    expect(methods.isFile(realpathMd)).toBeTruthy();
   });
   it('isFile(), Debería retornar False si no es un path de un archivo existente', () => {
-    expect(methods.isFile(fakePath)).toBe(false);
+    expect(methods.isFile(fakePath)).toBeFalsy();
   });
   it('isMd(), Debería retornar true si el path es un archivo .md', () => {
-    expect(methods.isMd(realpathMd)).toBe(true);
+    expect(methods.isMd(realpathMd)).toBeTruthy();
   });
   it('isMd(), Debería retornar False si el path no es un archivo .md', () => {
-    expect(methods.isMd('test\\test link.jpg')).toBe(false);
+    expect(methods.isMd('test\\test link.jpg')).toBeFalsy();
   });
   it('isDirectory(), Debería retornar true si el path es un directorio', () => {
-    expect(methods.isDirectory(realPathDirectory)).toBe(true);
+    expect(methods.isDirectory(realPathDirectory)).toBeTruthy();
   });
   it('isDirectory(), Debería retornar False si el path no es un directorio', () => {
-    expect(methods.isDirectory(realpathMd)).toBe(false);
-  });
-  it('arrayDirectory(), Debería retornar un objeto', () => {
-    expect(typeof methods.arrayDirectory('test\\links')).toBe('object');
+    expect(methods.isDirectory(realpathMd)).toBeFalsy();
   });
   it('arrayDirectory(), Debería retornar un objeto', () => {
     expect(typeof methods.arrayDirectory('test\\links')).toBe('object');
@@ -108,15 +103,14 @@ describe('Métodos necesarios para MdLinks', () => {
   it('getStatusLinks(), debería retornar un array de links y sus status', (done) => {
     methods.getStatusLinks(arrayLinkFail)
       .then((err) => {
-        console.log(err[0].message);
-        expect(err[0].message).toBe('Internal Server Error');
+        expect(err[0].statusText).toBe('Fail');
         done();
       });
   });
   it('validateLinks(), debería retornar un OK a un enlace disponible', (done) => {
     methods.validateLinks(pathMd).then((links) => {
-      const message = 'OK';
-      expect(links[0].message).toBe(message);
+      const statusText = 'OK';
+      expect(links[0].statusText).toBe(statusText);
       done();
     });
   });
